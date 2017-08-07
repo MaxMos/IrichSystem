@@ -1,0 +1,5 @@
+node_modules
+logs/
+files/
+global/config.js
+npm-debug.log*
