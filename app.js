@@ -8,6 +8,7 @@ const	express						=	require("express"),
 		debug						=	require( "debug" )( "providerSystem:server" ),
 		http						=	require( "http" ),
 		mainRouter					=	require("./routes/mainRouter"),
+		pageRouter					=	require("./routes/pageRouter"),
 		app							=	express();
 
 // use dev mode :method :url :status :response-time ms - :res[content-length]
@@ -37,6 +38,7 @@ app.use( session({
 }));
 
 app.use( "/Interface", mainRouter );
+app.use( "/dashboard", pageRouter );
 
 app.use( express.static( path.join( __dirname, "files" ) ) );
 

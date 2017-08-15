@@ -11,7 +11,8 @@ const	path						=	require( "path" ),
 		cookieParser				=	require( "cookie-parser" ),
 		session						=	require( "express-session" ),
 		webpackConfig				=	require( "./global/webpack/dev" ),
-		mainRouter					=	require( "./routes/mainRouter" );
+		mainRouter					=	require( "./routes/mainRouter" ),
+		pageRouter					=	require( "./routes/pageRouter" );
 
 let port, app, _resolve, readyPromise,
 	compiler, devMiddleware, hotMiddleware, staticPath, server;
@@ -60,6 +61,7 @@ app.use( compression() );
 app.use( express.static( path.join( __dirname, "files" ) ) );
 
 app.use( "/Interface", mainRouter );
+app.use( "/dashboard", pageRouter );
 
 app.use( require( "connect-history-api-fallback" )() );
 

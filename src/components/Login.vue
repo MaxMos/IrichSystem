@@ -27,7 +27,7 @@ a {
     left: 0;
     text-align: center;
     background-color: #141a48;
-    background-image: url("../assets/bg.png?v=1.0.0");
+    background-image: url("../assets/bg.jpg?v=1.0.0");
 }
 
 .wrapper {
@@ -76,8 +76,8 @@ a {
 <div class="login">
     <div class="wrapper">
         <img class="logo" src="../assets/logo.png?v=1.0.0"></img>
-        <h1>优碳网服务商中心</h1>
-        <h2>Service Provider Management System</h2>
+        <h1></h1>
+        <h2></h2>
         <div class="login-inputBox">
             <Form ref="form" :model="form" :rules="rule" :label-width="0">
                 <Form-item prop="user">
@@ -97,8 +97,8 @@ a {
         </div>
     </div>
     <p class="copyright">
-        <span class="version">系统版本：v1.0.0</span>
-        <span>Copyright © UCO2.com 优碳网 版权所有</span>
+        <span class="version">System Version：v1.0.0</span>
+        <span>Copyright © Irich Mobi 2017</span>
     </p>
 </div>
 </template>
@@ -132,12 +132,12 @@ export default {
     },
     methods: {
         handleSubmit() {
-            var _this = this;
+            var self = this;
             this.$refs['form'].validate(function(valid) {
                 if (valid) {
-                    _this.$http.post("/Interface/login", {
-                        userName: _this.form.user,
-                        userPwd: _this.form.password
+                    self.$http.post("/Interface/login", {
+                        username: self.form.user,
+                        password: self.form.password
                     }).then(function(res) {
                         var data = res.data;
                         switch (data.retcode) {
@@ -147,16 +147,18 @@ export default {
                                 });
                                 break;
                             case -1:
-                                _this.$Message.error("此账号不存在，请重新尝试！");
+                                self.$Message.error("此账号不存在，请重新尝试！");
                                 break;
                             case -7:
-                                _this.$Message.error("密码错误，请重新尝试！");
+                                self.$Message.error("密码错误，请重新尝试！");
                                 break;
+                            default:
+                                self.$Message.error(data.retmsg);
 
                         }
                     });
                 } else {
-                    _this.$Message.error("表单验证失败！");
+                    self.$Message.error("表单验证失败！");
                 }
             });
         }
