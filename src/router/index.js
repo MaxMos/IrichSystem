@@ -5,6 +5,7 @@ import Login from "@/components/Login";
 import Dashboard from "@/components/Dashboard";
 import Chnlist from "@/components/Chnlist";
 import Adlist from "@/components/Adlist";
+import Applist from "@/components/Applist";
 
 
 const router = new Router({
@@ -28,6 +29,10 @@ const router = new Router({
 			path: "adlist",
 			name: "adlist",
 			component: Adlist
+		}, {
+			path: "applist",
+			name: "applist",
+			component: Applist
 		}]
 	}]
 });

@@ -1,17 +1,7 @@
 <style scoped>
-.ctrlBox {
-	margin-bottom: 20px;
-	padding-bottom: 20px;
-	border-bottom: 1px solid #eee;
-}
-
 .ctrlBox .item {
 	display: inline-block;
 	width: 400px;
-}
-
-.totalTips {
-	margin-bottom: 10px;
 }
 
 .pageCount {
@@ -22,6 +12,7 @@
 
 <template>
 <div class="page">
+	<h1 class="pageTitle">广告数据</h1>
 	<div class="ctrlBox">
 		<div class="item">
 			<Input v-model="ader_id" placeholder="请输入联盟的ID">
@@ -31,7 +22,7 @@
 		</div>
 	</div>
 	<p class="totalTips">总共有 <strong>{{total}}</strong> 条广告数据</p>
-	<Table stripe border :columns="columns1" :data="data1"></Table>
+	<Table stripe border :columns="columns" :data="data"></Table>
 	<div class="pageCount">
 		<Page :total="total" :current="page" @on-change="changePage" @on-page-size-change="changePageSize" :page-size-opts="[10,20,40,100]" show-sizer></Page>
 	</div>
@@ -46,7 +37,7 @@ export default {
 			page: 1,
 			page_size: 10,
 			total: 0,
-			columns1: [{
+			columns: [{
 				title: '广告名',
 				key: 'ad_name'
 			}, {
@@ -85,10 +76,9 @@ export default {
 				key: 'income',
 				sortable: true
 			}],
-			data1: []
+			data: []
 		}
 	},
-	computed: {},
 	methods: {
 		loadData() {
 			this.$Loading.start();
@@ -105,7 +95,23 @@ export default {
 				switch (data.retcode) {
 					case 0:
 						if (data.retdata.total > 0) {
-							self.data1 = data.retdata.advertise;
+							let dataFormat = data.retdata.advertise;
+
+							self.data = dataFormat.map(function(item) {
+								let region = item.region.split(','),
+									reg = /\'(.*?)\'/,
+									len = region.length,
+									regionFormat = '';
+								region.forEach(function(str, index) {
+									regionFormat += (str.match(reg)[1]);
+									if(index != len - 1) {
+										regionFormat += '、';
+									}
+								});
+								item.region = regionFormat;
+								return item;
+							});
+
 							self.total = data.retdata.total;
 						}
 

@@ -125,10 +125,10 @@
 				<Submenu name="profile">
 					<template slot="title">
                         <Icon type="ios-settings-strong" :size="iconSize"></Icon>
-                        下游管理
+                        媒介管理
                     </template>
-                    <Menu-item name="1-1">下游列表</Menu-item>
-					<Menu-item name="1-2">创建下游媒介广告</Menu-item>
+                    <Menu-item name="chnlist">下游列表</Menu-item>
+					<Menu-item name="applist">应用列表</Menu-item>
 				</Submenu>
                 <Submenu name="product">
 					<template slot="title">
