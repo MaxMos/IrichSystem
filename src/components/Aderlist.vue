@@ -3,24 +3,33 @@
 
 <template>
 <div class="page">
-	<h1 class="pageTitle">下游列表</h1>
+	<h1 class="pageTitle">联盟列表</h1>
 	<div class="ctrlBox">
-		<Button type="primary" icon="plus" size="large" @click="modalShow">创建下游账号</Button>
+		<Button type="primary" icon="plus" size="large" @click="modalShow">创建联盟</Button>
 	</div>
-	<p class="totalTips">总共有 <strong>{{total}}</strong> 条下游数据</p>
+	<p class="totalTips">总共有 <strong>{{total}}</strong> 条联盟数据</p>
 	<Table stripe :columns="columns" :data="data"></Table>
 
-	<Modal v-model="modal" :loading="modalLoading" title="创建下游账号" width="40" ok-text="创建" @on-ok="save" @on-cancel="cancel">
-		<Form ref="createChn" :model="formItem" :rules="ruleValidate" :label-width="80">
-			<Form-item label="下游名字" prop="username">
-				<Input v-model="formItem.username"></Input>
+	<Modal v-model="modal" :loading="modalLoading" title="创建联盟" width="40" ok-text="创建" @on-ok="save" @on-cancel="cancel">
+		<Form ref="createAder" :model="formItem" :rules="ruleValidate" :label-width="100">
+			<Form-item label="Api Name" prop="api_name">
+				<Input v-model="formItem.api_name"></Input>
 			</Form-item>
-			<Form-item label="登录密码" prop="passwd">
-				<Input v-model="formItem.passwd"></Input>
+			<Form-item label="联盟名字" prop="name">
+				<Input v-model="formItem.name"></Input>
 			</Form-item>
-			<Form-item label="Email" prop="email">
-				<Input v-model="formItem.email"></Input>
+			<Form-item label="Callback URL" prop="resp_callback_url">
+				<Input v-model="formItem.resp_callback_url"></Input>
 			</Form-item>
+			<Form-item label="Callback Token" prop="resp_callback_token">
+				<Input v-model="formItem.resp_callback_token"></Input>
+			</Form-item>
+			<FormItem label="拉取广告">
+				<i-switch v-model="formItem.is_pulled" size="large">
+					<span slot="open">开启</span>
+					<span slot="close">关闭</span>
+				</i-switch>
+			</FormItem>
 		</Form>
 	</Modal>
 </div>
@@ -31,30 +40,30 @@ export default {
 	data() {
 		return {
 			columns: [{
-					title: '下游ID',
-					key: 'chn_id'
+					title: '联盟ID',
+					key: 'id'
 				},
 				{
-					title: '下游名字',
+					title: '联盟名字',
 					key: 'name'
 				},
 				{
-					title: 'Email',
-					key: 'email'
+					title: 'Api Name',
+					key: 'api_name'
 				},
 				{
 					title: '下游状态',
-					key: 'status',
+					key: 'is_pulled',
 					render: (h, params) => {
 						let text = '',
 							type = '';
-						switch (params.row.status) {
+						switch (params.row.is_pulled) {
 							case 1:
-								text = '正常';
+								text = '拉取中';
 								type = 'green';
 								break;
 							case 0:
-								text = '冻结';
+								text = '暂停';
 								type = 'yellow';
 								break;
 						}
@@ -74,9 +83,9 @@ export default {
 					render: (h, params) => {
 						let text = '',
 							type = '';
-						switch (params.row.status) {
+						switch (params.row.is_pulled) {
 							case 1:
-								text = '冻结';
+								text = '暂停拉取';
 								type = 'warning';
 								break;
 							case 0:
@@ -106,22 +115,29 @@ export default {
 			modalLoading: true,
 			app_id: null,
 			formItem: {
-				username: '',
-				passwd: '',
-				email: ''
+				api_name: '',
+				name: '',
+				resp_callback_url: '',
+				resp_callback_token: '',
+				is_pulled: true
 			},
 			ruleValidate: {
-				username: [{
+				api_name: [{
 					required: true,
 					message: '必填项',
 					trigger: 'blur'
 				}],
-				passwd: [{
+				name: [{
 					required: true,
 					message: '必填项',
 					trigger: 'blur'
 				}],
-				email: [{
+				resp_callback_url: [{
+					required: true,
+					message: '必填项',
+					trigger: 'blur'
+				}],
+				resp_callback_token: [{
 					required: true,
 					message: '必填项',
 					trigger: 'blur'
@@ -133,13 +149,13 @@ export default {
 		loadData() {
 			this.$Loading.start();
 			let self = this;
-			this.$http.post("/Interface/listChn", {}).then(function(res) {
+			this.$http.post("/Interface/getAder", {}).then(function(res) {
 				var data = res.data;
 				switch (data.retcode) {
 					case 0:
-						if (data.retdata.length > 0) {
-							self.data = data.retdata;
-							self.total = data.retdata.length;
+						if (data.retdata.union.length > 0) {
+							self.data = data.retdata.union;
+							self.total = data.retdata.union.length;
 						}
 						this.$Loading.finish();
 						break;
@@ -152,7 +168,7 @@ export default {
 		ChunStatusToggle(params) {
 			let self = this,
 				status = params.row.status == 1 ? 0 : 1;
-			this.$http.post("/Interface/setChnStatus", {
+			this.$http.post("/Interface/setStatus", {
 				chn_id: params.row.chn_id,
 				status: status
 			}).then(function(res) {
@@ -172,16 +188,18 @@ export default {
 			this.modal = true;
 		},
 		cancel() {
-			this.$refs['createChn'].resetFields();
+			this.$refs['createAder'].resetFields();
 		},
 		save() {
 			let self = this;
-			this.$refs['createChn'].validate((valid) => {
+			this.$refs['createAder'].validate((valid) => {
 				if (valid) {
-					this.$http.post("/Interface/createChn", {
-						username: self.formItem.username,
-						passwd: self.formItem.passwd,
-						email: self.formItem.email
+					this.$http.post("/Interface/createAder", {
+						api_name: self.formItem.api_name,
+						name: self.formItem.name,
+						resp_callback_url: self.formItem.resp_callback_url,
+						resp_callback_token: self.formItem.resp_callback_token,
+						is_pulled: self.formItem.is_pulled ? '1' : '0'
 					}).then(function(res) {
 						var data = res.data;
 						switch (data.retcode) {

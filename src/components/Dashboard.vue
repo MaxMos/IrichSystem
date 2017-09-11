@@ -124,6 +124,15 @@
 				</div>
 				<Submenu name="profile">
 					<template slot="title">
+                        <Icon type="stats-bars" :size="iconSize"></Icon>
+                        收入数据
+                    </template>
+                    <Menu-item name="aderIncome">联盟收入数据</Menu-item>
+					<!-- <Menu-item name="amIncome">AM收入数据</Menu-item> -->
+					<Menu-item name="appIncome">下游APP收入数据</Menu-item>
+				</Submenu>
+				<Submenu name="profile">
+					<template slot="title">
                         <Icon type="ios-settings-strong" :size="iconSize"></Icon>
                         媒介管理
                     </template>
@@ -135,7 +144,7 @@
                         <Icon type="ios-analytics" :size="iconSize"></Icon>
                         广告管理
                     </template>
-					<Menu-item name="2-1">联盟列表</Menu-item>
+					<Menu-item name="aderlist">联盟列表</Menu-item>
                     <Menu-item name="adlist">广告数据</Menu-item>
 				</Submenu>
 			</Menu>
@@ -145,7 +154,7 @@
 			<div class="layout-header">
 				<div class="welcome">
 					<span v-if="userName">{{userName}}，</span>
-					<span>欢迎使用 Irich Mobi System！</span>
+					<span>欢迎使用 Irich Mobi！</span>
 					<span style="padding-left: 10px;">
                       <Button type="ghost" icon="log-out" size="small" @click="logout">退出登录</Button>
                     </span>

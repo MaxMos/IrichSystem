@@ -1,28 +1,29 @@
 <style scoped>
+.income {
+	width: 300px;
+	padding: 0 20px;
+	border: 1px solid #2d8cf0;
+	border-left-width: 10px;
+	font-size: 18px;
+	line-height: 90px;
+	font-weight: 500;
+	color: #2d8cf0;
+}
+
+.income span {
+	vertical-align: top;
+}
+
+.income strong {
+	font-size: 32px;
+	float: right;
+}
 </style>
 
 <template>
 <div class="page">
-	<h1 class="pageTitle">下游列表</h1>
-	<div class="ctrlBox">
-		<Button type="primary" icon="plus" size="large" @click="modalShow">创建下游账号</Button>
-	</div>
-	<p class="totalTips">总共有 <strong>{{total}}</strong> 条下游数据</p>
-	<Table stripe :columns="columns" :data="data"></Table>
-
-	<Modal v-model="modal" :loading="modalLoading" title="创建下游账号" width="40" ok-text="创建" @on-ok="save" @on-cancel="cancel">
-		<Form ref="createChn" :model="formItem" :rules="ruleValidate" :label-width="80">
-			<Form-item label="下游名字" prop="username">
-				<Input v-model="formItem.username"></Input>
-			</Form-item>
-			<Form-item label="登录密码" prop="passwd">
-				<Input v-model="formItem.passwd"></Input>
-			</Form-item>
-			<Form-item label="Email" prop="email">
-				<Input v-model="formItem.email"></Input>
-			</Form-item>
-		</Form>
-	</Modal>
+	<h1 class="pageTitle">Am收入数据</h1>
+	<div class="income"><span>当前收入</span><strong>$500</strong></div>
 </div>
 </template>
 
@@ -31,30 +32,30 @@ export default {
 	data() {
 		return {
 			columns: [{
-					title: '下游ID',
-					key: 'chn_id'
+					title: '联盟ID',
+					key: 'id'
 				},
 				{
-					title: '下游名字',
+					title: '联盟名字',
 					key: 'name'
 				},
 				{
-					title: 'Email',
-					key: 'email'
+					title: 'Api Name',
+					key: 'api_name'
 				},
 				{
 					title: '下游状态',
-					key: 'status',
+					key: 'is_pulled',
 					render: (h, params) => {
 						let text = '',
 							type = '';
-						switch (params.row.status) {
+						switch (params.row.is_pulled) {
 							case 1:
-								text = '正常';
+								text = '拉取中';
 								type = 'green';
 								break;
 							case 0:
-								text = '冻结';
+								text = '暂停';
 								type = 'yellow';
 								break;
 						}
@@ -74,9 +75,9 @@ export default {
 					render: (h, params) => {
 						let text = '',
 							type = '';
-						switch (params.row.status) {
+						switch (params.row.is_pulled) {
 							case 1:
-								text = '冻结';
+								text = '暂停拉取';
 								type = 'warning';
 								break;
 							case 0:
@@ -106,22 +107,29 @@ export default {
 			modalLoading: true,
 			app_id: null,
 			formItem: {
-				username: '',
-				passwd: '',
-				email: ''
+				api_name: '',
+				name: '',
+				resp_callback_url: '',
+				resp_callback_token: '',
+				is_pulled: true
 			},
 			ruleValidate: {
-				username: [{
+				api_name: [{
 					required: true,
 					message: '必填项',
 					trigger: 'blur'
 				}],
-				passwd: [{
+				name: [{
 					required: true,
 					message: '必填项',
 					trigger: 'blur'
 				}],
-				email: [{
+				resp_callback_url: [{
+					required: true,
+					message: '必填项',
+					trigger: 'blur'
+				}],
+				resp_callback_token: [{
 					required: true,
 					message: '必填项',
 					trigger: 'blur'
@@ -133,13 +141,13 @@ export default {
 		loadData() {
 			this.$Loading.start();
 			let self = this;
-			this.$http.post("/Interface/listChn", {}).then(function(res) {
+			this.$http.post("/Interface/getAMIncome", {}).then(function(res) {
 				var data = res.data;
 				switch (data.retcode) {
 					case 0:
-						if (data.retdata.length > 0) {
-							self.data = data.retdata;
-							self.total = data.retdata.length;
+						if (data.retdata.union.length > 0) {
+							self.data = data.retdata.union;
+							self.total = data.retdata.union.length;
 						}
 						this.$Loading.finish();
 						break;
@@ -152,7 +160,7 @@ export default {
 		ChunStatusToggle(params) {
 			let self = this,
 				status = params.row.status == 1 ? 0 : 1;
-			this.$http.post("/Interface/setChnStatus", {
+			this.$http.post("/Interface/setStatus", {
 				chn_id: params.row.chn_id,
 				status: status
 			}).then(function(res) {
@@ -172,16 +180,18 @@ export default {
 			this.modal = true;
 		},
 		cancel() {
-			this.$refs['createChn'].resetFields();
+			this.$refs['createAder'].resetFields();
 		},
 		save() {
 			let self = this;
-			this.$refs['createChn'].validate((valid) => {
+			this.$refs['createAder'].validate((valid) => {
 				if (valid) {
-					this.$http.post("/Interface/createChn", {
-						username: self.formItem.username,
-						passwd: self.formItem.passwd,
-						email: self.formItem.email
+					this.$http.post("/Interface/createAder", {
+						api_name: self.formItem.api_name,
+						name: self.formItem.name,
+						resp_callback_url: self.formItem.resp_callback_url,
+						resp_callback_token: self.formItem.resp_callback_token,
+						is_pulled: self.formItem.is_pulled ? '1' : '0'
 					}).then(function(res) {
 						var data = res.data;
 						switch (data.retcode) {

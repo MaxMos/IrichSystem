@@ -63,7 +63,7 @@ ctrl.listChn = function(req) {
 };
 
 // 更改下游账号状态
-ctrl.setStatus = function(req) {
+ctrl.setChnStatus = function(req) {
 	this.validEmpty([
 		"chn_id", "status"
 	]);
@@ -74,6 +74,23 @@ ctrl.setStatus = function(req) {
 		return {
 			data: result,
 			str: "更改下游账号状态"
+		};
+	});
+};
+
+// 更改下游APP状态
+ctrl.setAppStatus = function(req) {
+	this.validEmpty([
+		"chn_id", "app_id", "status"
+	]);
+	return this.request(req, "/v1/app/active", {
+		chn_id: req.body.chn_id,
+		app_id: req.body.app_id,
+		status: req.body.status
+	}).then(result => {
+		return {
+			data: result,
+			str: "更改下游APP状态"
 		};
 	});
 };
@@ -105,5 +122,105 @@ ctrl.createChn = function(req) {
 		};
 	});
 };
+
+// 获取所有联盟信息
+ctrl.getAder = function(req) {
+	return this.request(req, "/v1/ad/getAder", {}).then(result => {
+		return {
+			data: result,
+			str: "获取所有联盟信息"
+		};
+	});
+};
+
+// 创建联盟
+ctrl.createAder = function(req) {
+	this.validEmpty([
+		"api_name", "name", "resp_callback_url", "resp_callback_token"
+	]);
+	return this.request(req, "/v1/am/createAder", {
+		api_name: req.body.api_name,
+		name: req.body.name,
+		resp_callback_url: req.body.resp_callback_url,
+		resp_callback_token: req.body.resp_callback_token,
+		is_pulled: req.body.is_pulled
+	}).then(result => {
+		return {
+			data: result,
+			str: "创建联盟"
+		};
+	});
+};
+
+// 根据联盟ID创建OFFER
+ctrl.createOfferByUnion = function(req) {
+	this.validEmpty([
+		"ader_id", "app_id"
+	]);
+	return this.request(req, "/v1/am/createOfferByUnion", {
+		ader_id: req.body.ader_id,
+		app_id: req.body.app_id
+	}).then(result => {
+		return {
+			data: result,
+			str: "根据联盟ID创建OFFER"
+		};
+	});
+};
+
+// 给该APP设置分成和扣量
+ctrl.SetDP = function(req) {
+	this.validEmpty([
+		"divide", "app_id", "deduction"
+	]);
+	return this.request(req, "/v1/app/SetDP", {
+		app_id: req.body.app_id,
+		deduction: req.body.deduction,
+		divide: req.body.divide
+	}).then(result => {
+		return {
+			data: result,
+			str: "给该APP设置分成和扣量"
+		};
+	});
+};
+
+// 统计从该联盟获取的收入
+ctrl.getAderIncome = function(req) {
+	return this.request(req, "/v1/count/getAderIncome", {}).then(result => {
+		return {
+			data: result,
+			str: "统计从该联盟获取的收入"
+		};
+	});
+};
+
+// 统计该AM的收入
+ctrl.getAMIncome = function(req) {
+	return this.request(req, "/v1/count/getAMIncome", {
+		am_id: req.session.user.am_id
+	}).then(result => {
+		return {
+			data: result,
+			str: "统计该AM的收入"
+		};
+	});
+};
+
+// 统计下游的收入
+ctrl.getChnAppIncome = function(req) {
+	let param = {};
+	if (req.body.chn_id) {
+		param.chn_id = req.body.chn_id;
+	}
+	return this.request(req, "/v1/count/getChnAppIncome", param).then(result => {
+		return {
+			data: result,
+			str: "统计下游的收入"
+		};
+	});
+};
+
+
 
 module.exports = new BaseController(ctrl);

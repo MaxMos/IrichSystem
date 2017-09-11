@@ -6,6 +6,10 @@ import Dashboard from "@/components/Dashboard";
 import Chnlist from "@/components/Chnlist";
 import Adlist from "@/components/Adlist";
 import Applist from "@/components/Applist";
+import Aderlist from "@/components/Aderlist";
+import AderIncome from "@/components/AderIncome";
+import AmIncome from "@/components/AmIncome";
+import AppIncome from "@/components/AppIncome";
 
 
 const router = new Router({
@@ -20,19 +24,35 @@ const router = new Router({
 		children: [{
 			path: "",
 			name: "dashboard",
-			component: Chnlist
+			component: AppIncome
 		}, {
 			path: "chnlist",
 			name: "chnlist",
 			component: Chnlist
 		}, {
+			path: "applist",
+			name: "applist",
+			component: Applist
+		}, {
 			path: "adlist",
 			name: "adlist",
 			component: Adlist
 		}, {
-			path: "applist",
-			name: "applist",
-			component: Applist
+			path: "aderlist",
+			name: "aderlist",
+			component: Aderlist
+		}, {
+			path: "aderIncome",
+			name: "aderIncome",
+			component: AderIncome
+		}, {
+			path: "amIncome",
+			name: "amIncome",
+			component: AmIncome
+		}, {
+			path: "appIncome",
+			name: "appIncome",
+			component: AppIncome
 		}]
 	}]
 });

@@ -26,6 +26,7 @@ Controller.prototype.request = function(req, url, data = null, type = "POST") {
 			}
 		}
 	}
+	console.log('请求' + url);
 	return http.request({
 		type: type,
 		url: config.serverUrl + url,
@@ -35,7 +36,6 @@ Controller.prototype.request = function(req, url, data = null, type = "POST") {
 		}
 	}).then(result => {
 		result = JSON.parse(result.body);
-
 		if (result.retcode === 0) {
 			return result.retdata;
 		} else {
