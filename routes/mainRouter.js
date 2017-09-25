@@ -11,20 +11,7 @@ const express = require("express"),
 	info = require("../application/controller/infoController.js"),
 	http = require("../global/http");
 
-router.all("/*", [(req, res, next) => {
-	if (req.session.token) {
-		next();
-	} else {
-		let url = config.serverUrl + "/v1/token";
-		http.get({
-			url: url,
-			contentType: 'json'
-		}).then(result => {
-			req.session.token = result.body;
-			next();
-		});
-	}
-}], (req, res, next) => {
+router.all("/*", (req, res, next) => {
 	log.info("[ RequestURL ]" + req.url);
 	log.info("[ RequestMethod ]" + req.method);
 	let logObj = {},
