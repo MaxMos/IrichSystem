@@ -167,16 +167,16 @@ export default {
 		},
 		ChunStatusToggle(params) {
 			let self = this,
-				status = params.row.status == 1 ? 0 : 1;
-			this.$http.post("/Interface/setStatus", {
-				chn_id: params.row.chn_id,
-				status: status
+				is_pulled = params.row.is_pulled == 1 ? 0 : 1;
+			this.$http.post("/Interface/updateAderStatus", {
+				api_name: params.row.api_name,
+				is_pulled: is_pulled
 			}).then(function(res) {
 				var data = res.data;
 				switch (data.retcode) {
 					case 0:
 						self.$Message.success(data.retmsg);
-						self.data[params.index].status = status;
+						self.data[params.index].is_pulled = is_pulled;
 						break;
 					default:
 						self.$Message.error(data.retmsg);
@@ -205,6 +205,8 @@ export default {
 						switch (data.retcode) {
 							case 0:
 								self.$Message.success(data.retmsg);
+								this.loadData();
+								this.modal = false;
 								break;
 							default:
 								self.$Message.error(data.retmsg);

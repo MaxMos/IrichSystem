@@ -187,6 +187,9 @@ export default {
 						switch (data.retcode) {
 							case 0:
 								self.$Message.success(data.retmsg);
+								// this.modal = false;
+								this.modal = false;
+								this.loadData();
 								break;
 							default:
 								self.$Message.error(data.retmsg);
