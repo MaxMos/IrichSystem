@@ -152,6 +152,22 @@ ctrl.createAder = function(req) {
 	});
 };
 
+// 更改联盟账号状态
+ctrl.updateAderStatus = function(req) {
+	this.validEmpty([
+		"is_pulled", "is_pulled"
+	]);
+	return this.request(req, "/v1/am/updateAderStatus", {
+		api_name: req.body.api_name,
+		is_pulled: req.body.is_pulled
+	}).then(result => {
+		return {
+			data: result,
+			str: "更改联盟账号状态"
+		};
+	});
+};
+
 // 根据联盟ID创建OFFER
 ctrl.createOfferByUnion = function(req) {
 	this.validEmpty([
